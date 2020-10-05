@@ -1,5 +1,5 @@
-# from urlparse import urljoin
-from scrapy.selector import HtmlXPathSelector
+from urlparse import urljoin, urlparse
+
 import re
 from scrapy import Request
 from scrapy.item import Item, Field
@@ -7,16 +7,18 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import Identity
 from scrapy.spiders.crawl import CrawlSpider
 from scrapylib.processors import default_input_processor, default_output_processor
-from urllib.parse import urlparse
+
 
 __author__ = 'lohitbadiger'
 
 
 class NormalizedJoin(object):
     """ Strips non-empty values and joins them with the given separator. """
+
     def __init__(self, separator=u' ', return_list=False):
         self.separator = separator
         self.return_list = return_list
+
     def __call__(self, values):
         result = self.separator.join(
             [value.strip() for value in values if value and not value.isspace()])
@@ -115,7 +117,7 @@ class SimplyLawJobs(CrawlSpider):
 
     """Extracting particular job data """
     def parseJobs(self, response1):
-        jobItem = JobItem()
+	jobItem = JobItem()
         sel1 = HtmlXPathSelector(response1)
         details1 = sel1.select('//div[@class="info font-size-small"]/a[@class]').extract()
         details2 = sel1.select('//div[@class="info font-size-small"]/a/text()').extract() 
@@ -136,23 +138,23 @@ class SimplyLawJobs(CrawlSpider):
             jobID.append(job_id.replace("?s=featured", ""))
             yield Request(particularJobPage, callback=self.parseJobPage)
 
-jobItem['title'] = jobtitle
-jobItem['company'] = company
-jobItem['url'] = uRL
-jobItem['job_id'] = jobID
-d =  dict(jobItem)
-vv = []
-kk = []
-for key, value in d.iteritems():
-    vv.append(value)	
-    kk.append(key)
+	jobItem['title'] = jobtitle
+	jobItem['company'] = company
+	jobItem['url'] = uRL
+	jobItem['job_id'] = jobID
+	d =  dict(jobItem)
+	vv = []
+	kk = []
+	for key, value in d.iteritems():
+	    vv.append(value)	
+	    kk.append(key)
 
-for i in range(len(vv[0])):
-    for j in range(len(vv)):
-    	print( kk[j], ":", vv[j][i])
-    print("******************************")
-    print( "******************************")
-	
+	for i in range(len(vv[0])):
+	    for j in range(len(vv)):
+	    	print kk[j], ":", vv[j][i]
+	    print "******************************"
+	    print "******************************"
+		
     """for Extracting job description"""
     def parseJobPage(self, response2):
         sel2 = HtmlXPathSelector(response2)
